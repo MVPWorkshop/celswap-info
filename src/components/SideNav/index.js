@@ -164,8 +164,8 @@ function SideNav({ history }) {
           </AutoColumn>
           <AutoColumn gap="0.5rem" style={{ marginLeft: '.75rem', marginBottom: '4rem' }}>
             <HeaderText>
-              <Link href="mailto:weare@celswap.org" target="_blank">
-                Join us
+              <Link href="https://app.celswap.org/#/swap" target="_blank">
+                Celswap App
               </Link>
             </HeaderText>
             <HeaderText>
@@ -176,6 +176,11 @@ function SideNav({ history }) {
             <HeaderText>
               <Link href="https://github.com/Celsians" target="_blank">
                 GitHub
+              </Link>
+            </HeaderText>
+            <HeaderText>
+              <Link href="mailto:weare@celswap.org" target="_blank">
+                Join us
               </Link>
             </HeaderText>
             <Toggle isActive={isDark} toggle={toggleDarkMode} />
