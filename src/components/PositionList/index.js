@@ -11,7 +11,7 @@ import DoubleTokenLogo from '../DoubleLogo'
 import { withRouter } from 'react-router-dom'
 import { formattedNum, getPoolLink } from '../../utils'
 import { AutoColumn } from '../Column'
-import { useEthPrice } from '../../contexts/GlobalData'
+import { useEthPrice, useCelPrice } from '../../contexts/GlobalData'
 import { RowFixed } from '../Row'
 import { ButtonLight } from '../ButtonStyled'
 import { TYPE } from '../../Theme'
@@ -107,6 +107,8 @@ const SORT_FIELD = {
   UNISWAP_RETURN: 'UNISWAP_RETURN',
 }
 
+const CELSIUS_TOKEN = `0xaaaebe6fe48e54f431b0c390cfaf0b017d09d42d`
+
 function PositionList({ positions }) {
   const below500 = useMedia('(max-width: 500px)')
   const below740 = useMedia('(max-width: 740px)')
@@ -138,8 +140,31 @@ function PositionList({ positions }) {
   const [ethPrice] = useEthPrice()
 
   const ListItem = ({ position, index }) => {
+    const celPrice = useCelPrice()
     const poolOwnership = position.liquidityTokenBalance / position.pair.totalSupply
-    const valueUSD = poolOwnership * position.pair.reserveUSD
+    //const valueUSD = poolOwnership * position.pair.reserveUSD
+
+    const token0Rate =
+      position.pair.reserve0 && position.pair.reserve1
+        ? formattedNum(position.pair.reserve1 / position.pair.reserve0)
+        : '-'
+    const token1Rate =
+      position.pair.reserve0 && position.pair.reserve1
+        ? formattedNum(position.pair.reserve0 / position.pair.reserve1)
+        : '-'
+
+    let token0USD = 0
+    let token1USD = 0
+
+    if (position.pair.token0?.id === CELSIUS_TOKEN) {
+      token0USD = poolOwnership * position.pair.reserve0 * celPrice
+      token1USD = poolOwnership * position.pair.reserve1 * token1Rate * celPrice
+    } else {
+      token0USD = poolOwnership * position.pair.reserve0 * token0Rate * celPrice
+      token1USD = poolOwnership * position.pair.reserve1 * celPrice
+    }
+
+    const valueUSD = token0USD + token1USD
 
     return (
       <DashGrid style={{ opacity: poolOwnership > 0 ? 1 : 0.6 }} focus={true}>
@@ -166,11 +191,11 @@ function PositionList({ positions }) {
               >
                 <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px' }}>Add</ButtonLight>
               </Link>
-              {/* {poolOwnership > 0 && (
+              {poolOwnership > 0 && (
                 <Link external href={getPoolLink(position.pair.token0.id, position.pair.token1.id, true)}>
                   <ButtonLight style={{ padding: '4px 6px', borderRadius: '4px' }}>Remove</ButtonLight>
                 </Link>
-              )} */}
+              )}
             </RowFixed>
           </AutoColumn>
         </DataText>

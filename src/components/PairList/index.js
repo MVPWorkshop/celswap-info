@@ -14,6 +14,7 @@ import DoubleTokenLogo from '../DoubleLogo'
 import FormattedName from '../FormattedName'
 import QuestionHelper from '../QuestionHelper'
 import { TYPE } from '../../Theme'
+import { useCelPrice } from '../../contexts/GlobalData'
 
 dayjs.extend(utc)
 
@@ -115,10 +116,14 @@ const FIELD_TO_VALUE = {
   [SORT_FIELD.FEES]: 'oneDayVolumeUSD',
 }
 
+const CELSIUS_TOKEN = `0xaaaebe6fe48e54f431b0c390cfaf0b017d09d42d`
+
 function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
   const below600 = useMedia('(max-width: 600px)')
   const below740 = useMedia('(max-width: 740px)')
   const below1080 = useMedia('(max-width: 1080px)')
+
+  const celPrice = useCelPrice()
 
   // pagination
   const [page, setPage] = useState(1)
@@ -148,7 +153,23 @@ function PairList({ pairs, color, disbaleLinks, maxItems = 10 }) {
     const pairData = pairs[pairAddress]
 
     if (pairData && pairData.token0 && pairData.token1) {
-      const liquidity = formattedNum(pairData.reserveUSD, true)
+      const token0Rate =
+        pairData.reserve0 && pairData.reserve1 ? formattedNum(pairData.reserve1 / pairData.reserve0) : '-'
+      const token1Rate =
+        pairData.reserve0 && pairData.reserve1 ? formattedNum(pairData.reserve0 / pairData.reserve1) : '-'
+      let token0USD = 0
+      let token1USD = 0
+
+      if (pairData.token0?.id === CELSIUS_TOKEN) {
+        token0USD = pairData.reserve0 * celPrice
+        token1USD = pairData.reserve1 * token1Rate * celPrice
+      } else {
+        token0USD = pairData.reserve0 * token0Rate * celPrice
+        token1USD = pairData.reserve1 * celPrice
+      }
+
+      const liquidityUSD = token0USD + token1USD
+      const liquidity = formattedNum(liquidityUSD, true)
       const volume = formattedNum(pairData.oneDayVolumeUSD, true)
       const apy = formattedPercent((pairData.oneDayVolumeUSD * 0.003 * 365 * 100) / pairData.reserveUSD)
 

@@ -23,7 +23,7 @@ import { useMedia } from 'react-use'
 import DoubleTokenLogo from '../components/DoubleLogo'
 import TokenLogo from '../components/TokenLogo'
 import { Hover } from '../components'
-import { useEthPrice } from '../contexts/GlobalData'
+import { useEthPrice, useCelPrice } from '../contexts/GlobalData'
 import Warning from '../components/Warning'
 import { usePathDismissed, useSavedPairs } from '../contexts/LocalStorage'
 
@@ -121,6 +121,8 @@ function PairPage({ pairAddress, history }) {
     liquidityChangeUSD,
   } = usePairData(pairAddress)
 
+  const CELSIUS_TOKEN = `0xaaaebe6fe48e54f431b0c390cfaf0b017d09d42d`
+
   useEffect(() => {
     document.querySelector('body').scrollTo(0, 0)
   }, [])
@@ -129,11 +131,11 @@ function PairPage({ pairAddress, history }) {
   const backgroundColor = useColor(pairAddress)
 
   // liquidity
-  const liquidity = trackedReserveUSD
-    ? formattedNum(trackedReserveUSD, true)
-    : reserveUSD
-    ? formattedNum(reserveUSD, true)
-    : '-'
+  // const liquidity = trackedReserveUSD
+  //   ? formattedNum(trackedReserveUSD, true)
+  //   : reserveUSD
+  //   ? formattedNum(reserveUSD, true)
+  //   : '-'
   const liquidityChange = formattedPercent(liquidityChangeUSD)
 
   // mark if using untracked liquidity
@@ -168,15 +170,31 @@ function PairPage({ pairAddress, history }) {
 
   // token data for usd
   const [ethPrice] = useEthPrice()
-  const token0USD =
-    token0?.derivedETH && ethPrice ? formattedNum(parseFloat(token0.derivedETH) * parseFloat(ethPrice), true) : ''
+  // const token0USD =
+  //   token0?.derivedETH && ethPrice ? formattedNum(parseFloat(token0.derivedETH) * parseFloat(ethPrice), true) : ''
 
-  const token1USD =
-    token1?.derivedETH && ethPrice ? formattedNum(parseFloat(token1.derivedETH) * parseFloat(ethPrice), true) : ''
+  // const token1USD =
+  //   token1?.derivedETH && ethPrice ? formattedNum(parseFloat(token1.derivedETH) * parseFloat(ethPrice), true) : ''
 
   // rates
   const token0Rate = reserve0 && reserve1 ? formattedNum(reserve1 / reserve0) : '-'
   const token1Rate = reserve0 && reserve1 ? formattedNum(reserve0 / reserve1) : '-'
+
+  const celPrice = useCelPrice()
+
+  let token0USD = 0
+  let token1USD = 0
+
+  if (token0?.id === CELSIUS_TOKEN) {
+    token0USD = reserve0 * celPrice
+    token1USD = reserve1 * token1Rate * celPrice
+  } else {
+    token0USD = reserve0 * token0Rate * celPrice
+    token1USD = reserve1 * celPrice
+  }
+
+  const liquidityUSD = token0USD + token1USD
+  const liquidity = formattedNum(liquidityUSD, true)
 
   // formatted symbols for overflow
   const formattedSymbol0 = token0?.symbol.length > 6 ? token0?.symbol.slice(0, 5) + '...' : token0?.symbol
@@ -297,11 +315,7 @@ function PairPage({ pairAddress, history }) {
                 <RowFixed>
                   <TokenLogo address={token0?.id} size={'16px'} />
                   <TYPE.main fontSize={'16px'} lineHeight={1} fontWeight={500} ml={'4px'}>
-                    {token0 && token1
-                      ? `1 ${formattedSymbol0} = ${token0Rate} ${formattedSymbol1} ${
-                          parseFloat(token0?.derivedETH) ? '(' + token0USD + ')' : ''
-                        }`
-                      : '-'}
+                    {token0 && token1 ? `1 ${formattedSymbol0} = ${token0Rate} ${formattedSymbol1} ` : '-'}
                   </TYPE.main>
                 </RowFixed>
               </FixedPanel>
@@ -309,11 +323,7 @@ function PairPage({ pairAddress, history }) {
                 <RowFixed>
                   <TokenLogo address={token1?.id} size={'16px'} />
                   <TYPE.main fontSize={'16px'} lineHeight={1} fontWeight={500} ml={'4px'}>
-                    {token0 && token1
-                      ? `1 ${formattedSymbol1} = ${token1Rate} ${formattedSymbol0}  ${
-                          parseFloat(token1?.derivedETH) ? '(' + token1USD + ')' : ''
-                        }`
-                      : '-'}
+                    {token0 && token1 ? `1 ${formattedSymbol1} = ${token1Rate} ${formattedSymbol0} ` : '-'}
                   </TYPE.main>
                 </RowFixed>
               </FixedPanel>

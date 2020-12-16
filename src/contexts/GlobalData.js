@@ -466,6 +466,18 @@ const getEthPrice = async () => {
   return [ethPrice, ethPriceOneDay, priceChangeETH]
 }
 
+export const useCelPrice = () => {
+  const [celPrice, setCelPrice] = useState(0)
+  fetch(`https://api.coinpaprika.com/v1/tickers/cel-celsius`).then((res) =>
+    res.json().then((data) => {
+      if (data) {
+        setCelPrice(Number(data.quotes?.USD.price))
+      }
+    })
+  )
+  return celPrice
+}
+
 const PAIRS_TO_FETCH = 500
 const TOKENS_TO_FETCH = 500
 
