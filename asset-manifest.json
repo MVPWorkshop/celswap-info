@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.js": "/celswap-info/static/js/main.e0029bc0.chunk.js",
+    "main.js.map": "/celswap-info/static/js/main.e0029bc0.chunk.js.map",
+    "runtime-main.js": "/celswap-info/static/js/runtime-main.7edd2aad.js",
+    "runtime-main.js.map": "/celswap-info/static/js/runtime-main.7edd2aad.js.map",
+    "static/js/2.fab8c4a1.chunk.js": "/celswap-info/static/js/2.fab8c4a1.chunk.js",
+    "static/js/2.fab8c4a1.chunk.js.map": "/celswap-info/static/js/2.fab8c4a1.chunk.js.map",
+    "index.html": "/celswap-info/index.html",
+    "precache-manifest.5d3bdb7c7cf80a576968c068d50833fc.js": "/celswap-info/precache-manifest.5d3bdb7c7cf80a576968c068d50833fc.js",
+    "service-worker.js": "/celswap-info/service-worker.js",
+    "static/js/2.fab8c4a1.chunk.js.LICENSE.txt": "/celswap-info/static/js/2.fab8c4a1.chunk.js.LICENSE.txt",
+    "static/media/cel-swap-logo-symbol.svg": "/celswap-info/static/media/cel-swap-logo-symbol.624a65b6.svg",
+    "static/media/celswap_logo.svg": "/celswap-info/static/media/celswap_logo.775521e0.svg",
+    "static/media/eth.png": "/celswap-info/static/media/eth.73dabb37.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.7edd2aad.js",
+    "static/js/2.fab8c4a1.chunk.js",
+    "static/js/main.e0029bc0.chunk.js"
+  ]
+}
